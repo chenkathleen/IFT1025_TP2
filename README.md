@@ -1,1 +1,1 @@
-# IFT1025_TP2
+# IFT1025-TP2-server
