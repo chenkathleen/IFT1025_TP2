@@ -1,14 +1,13 @@
 package server;
 
 import javafx.util.Pair;
+import server.models.Course;
+import server.models.RegistrationForm;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 
 public class Server {
 
@@ -55,6 +54,7 @@ public class Server {
     public void listen() throws IOException, ClassNotFoundException {
         String line;
         if ((line = this.objectInputStream.readObject().toString()) != null) {
+            System.out.println(line);
             Pair<String, String> parts = processCommandLine(line);
             String cmd = parts.getKey();
             String arg = parts.getValue();
@@ -91,7 +91,33 @@ public class Server {
      @param arg la session pour laquelle on veut récupérer la liste des cours
      */
     public void handleLoadCourses(String arg) {
-        // TODO: implémenter cette méthode
+        String sessionFiltre = arg;
+        System.out.println("loading courses");
+
+        //try (BufferedReader reader = new BufferedReader(new FileReader("cours.txt"))){
+        try (BufferedReader reader = new BufferedReader(new FileReader("./src/main/java/server/data/cours.txt"))){
+            // ArrayList <Course> listeDeCours = new ArrayList<>();
+            Map<String, Course> courseDict = new HashMap<>();
+
+            String line;
+            while((line = reader.readLine()) != null) {
+                String[] parts = line.split("\t");
+                String code = parts[0];
+                String name = parts[1];
+                String session = parts[2];
+                if (sessionFiltre.equals(session)) {
+                    //listeDeCours.add(new Course(name, code, session));
+                    courseDict.put(code, new Course(name, code, session));
+                }
+            }
+
+            //objectOutputStream.writeObject(listeDeCours);
+            objectOutputStream.writeObject(courseDict);
+
+
+        } catch (IOException ex) {
+            System.out.println("issue with reading cours.txt");
+        }
     }
 
     /**
@@ -99,8 +125,28 @@ public class Server {
      et renvoyer un message de confirmation au client.
      La méthode gére les exceptions si une erreur se produit lors de la lecture de l'objet, l'écriture dans un fichier ou dans le flux de sortie.
      */
+    //"./src/main/java/server/data/inscription.txt"
     public void handleRegistration() {
-        // TODO: implémenter cette méthode
+
+        //try (BufferedWriter writer = new BufferedWriter(new FileWriter("inscription.txt", true))){
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("./src/main/java/server/data/inscription.txt", true))){
+            RegistrationForm registrationForm = (RegistrationForm) objectInputStream.readObject();
+            Course course = registrationForm.getCourse();
+            String session = course.getSession();
+            String code = course.getCode();
+            String matricule = registrationForm.getMatricule();
+            String prenom = registrationForm.getPrenom();
+            String nom = registrationForm.getNom();
+            String email = registrationForm.getEmail();
+
+            String nouveau_inscription = session + "\t" + code + "\t" + matricule + "\t" + prenom + "\t" + nom + "\t" + email;
+            writer.newLine();
+            writer.write(nouveau_inscription);
+            objectOutputStream.writeObject(registrationForm);
+
+        } catch (Exception ex) {
+        }
+
     }
 }
 
