@@ -1,5 +1,6 @@
 package client_fx;
 
+import client_simple.Modele;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;

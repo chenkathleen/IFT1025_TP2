@@ -96,7 +96,7 @@ public class Server {
 
         //try (BufferedReader reader = new BufferedReader(new FileReader("cours.txt"))){
         try (BufferedReader reader = new BufferedReader(new FileReader("./src/main/java/server/data/cours.txt"))){
-            ArrayList <Course> listeDeCours = new ArrayList<>();
+            List <Course> listeDeCours = new ArrayList<>();
             Map<String, Course> courseDict = new HashMap<>();
 
             String line;

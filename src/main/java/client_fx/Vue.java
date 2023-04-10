@@ -15,8 +15,10 @@ import server.models.Course;
 import server.models.RegistrationForm;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static javafx.collections.FXCollections.observableArrayList;
+import static javafx.collections.FXCollections.observableList;
 
 public class Vue extends HBox {
 
@@ -86,8 +88,8 @@ public class Vue extends HBox {
     public void updateText(String nouvelleValeur) {
         classViewText.setText(nouvelleValeur);
     }
-    public void updateClassTable(ArrayList<Course> courseList) {
-        classViewTable.setItems(observableArrayList(courseList));
+    public void updateClassTable(List<Course> courseList) {
+        classViewTable.setItems(observableList(courseList));
     }
 
     public Button getChargerBouton(){
