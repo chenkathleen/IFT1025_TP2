@@ -96,7 +96,7 @@ public class Server {
 
         //try (BufferedReader reader = new BufferedReader(new FileReader("cours.txt"))){
         try (BufferedReader reader = new BufferedReader(new FileReader("./src/main/java/server/data/cours.txt"))){
-            // ArrayList <Course> listeDeCours = new ArrayList<>();
+            ArrayList <Course> listeDeCours = new ArrayList<>();
             Map<String, Course> courseDict = new HashMap<>();
 
             String line;
@@ -106,13 +106,13 @@ public class Server {
                 String name = parts[1];
                 String session = parts[2];
                 if (sessionFiltre.equals(session)) {
-                    //listeDeCours.add(new Course(name, code, session));
+                    listeDeCours.add(new Course(name, code, session));
                     courseDict.put(code, new Course(name, code, session));
                 }
             }
 
-            //objectOutputStream.writeObject(listeDeCours);
-            objectOutputStream.writeObject(courseDict);
+            objectOutputStream.writeObject(listeDeCours);
+            // objectOutputStream.writeObject(courseDict); //TEMP: simple client needs dict
 
 
         } catch (IOException ex) {
@@ -142,7 +142,7 @@ public class Server {
             String nouveau_inscription = session + "\t" + code + "\t" + matricule + "\t" + prenom + "\t" + nom + "\t" + email;
             writer.newLine();
             writer.write(nouveau_inscription);
-            objectOutputStream.writeObject(registrationForm);
+            objectOutputStream.writeObject("Success");
 
         } catch (Exception ex) {
         }

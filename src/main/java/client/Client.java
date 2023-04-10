@@ -6,12 +6,14 @@ import server.models.RegistrationForm;
 import java.io.*;
 import java.net.ConnectException;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Scanner;
 
 public class Client {
     private static String currentScreen = "chooseSession";
-    private static Map<String, Course> currentCourseDict;
+    //private static Map<String, Course> currentCourseDict;
+    private static ArrayList <Course> currentCourseDict;
     
     public static void main(String[] args) {
 
@@ -101,8 +103,12 @@ public class Client {
                 os.flush();
             } else if (input.equals("2")) {
                 String[] registrationInfo = registrationInfoScreen(sc);
+
+                Course testCourse = new Course("IFT1025",	"Programmation2", "Hiver");
                 RegistrationForm testInscription = new RegistrationForm(
-                        registrationInfo[0], registrationInfo[1], registrationInfo[2], registrationInfo[3], currentCourseDict.get(registrationInfo[4]));
+                        registrationInfo[0], registrationInfo[1], registrationInfo[2], registrationInfo[3], testCourse);
+//                RegistrationForm testInscription = new RegistrationForm(
+//                        registrationInfo[0], registrationInfo[1], registrationInfo[2], registrationInfo[3], currentCourseDict.get(registrationInfo[4]));
                 os.writeObject("INSCRIRE");
                 os.writeObject(testInscription);
                 os.flush();
@@ -125,7 +131,8 @@ public class Client {
         // can perform operations on objects, clean up output for display, including allowed next set of options
         String processedOutput = null;
         if (currentScreen.equals("viewCourses")) {
-            currentCourseDict = (Map<String, Course>) is.readObject();
+            //currentCourseDict = (Map<String, Course>) is.readObject();
+            currentCourseDict = (ArrayList <Course>) is.readObject();
             processedOutput = "Courses offered: " + "\n" + currentCourseDict.toString() + "\n" + "1 = another session; 2 = register";
         } else if (currentScreen.equals("registration")) {
             processedOutput = is.readObject().toString() + "\n" + "1 = another session; 2 = register";
