@@ -14,6 +14,11 @@ import server.models.Course;
 import java.util.List;
 import static javafx.collections.FXCollections.observableList;
 
+/**
+ * L'affichage graphique de l'application.
+ * Inclut un écran qui permet d'afficher les cours disponibles pour une session donnée, ainsi qu'un écran qui envoie
+ * un formulaire d'inscription et effectue l'inscription.
+ */
 public class Vue extends HBox {
 
     private TableView<Course> classViewTable = new TableView();
@@ -27,6 +32,11 @@ public class Vue extends HBox {
     private Dialog<String> errorScreen = new Dialog();
     private Dialog<String> confirmationScreen = new Dialog();
 
+    /**
+     * Crée l'affichage graphique.
+     * Instantie la structure des deux écrans, incluant la liste de sessions possibles, et les champs du formulaire
+     * d'inscription.
+     */
     public Vue() {
         this.setBackground(new Background (new BackgroundFill(Color.LINEN, CornerRadii.EMPTY, Insets.EMPTY)));
 
@@ -112,40 +122,109 @@ public class Vue extends HBox {
         confirmationScreen.getDialogPane().getButtonTypes().add(successButton);
     }
 
+    /**
+     * Récupère l'écran qui affiche les messages erreur.
+     *
+     * @return l'écran qui affiche les messages erreur.
+     */
     public Dialog<String> getErrorScreen() {
         return errorScreen;
-}
+    }
+
+    /**
+     * Récupère l'écran qui affiche le message de confirmation si une inscription a réussi.
+     *
+     * @return l'écran qui affiche le message de confirmation de l'inscription.
+     */
     public Dialog<String> getConfirmationScreen() {
         return confirmationScreen;
     }
+
+    /**
+     * Récupère le bouton qui permet d'accéder au liste de cours pour une session donnée.
+     *
+     * @return le bouton qui charge la liste des cours.
+     */
     public Button getChargerBouton(){
         return chargerBouton;
     }
+
+    /**
+     * Récupère le bouton qui envoie le formulaire d'inscription au serveur.
+     *
+     * @return le bouton qui envoie le formulaire d'inscription au serveur.
+     */
     public Button getEnvoyerBouton(){
         return envoyerBouton;
     }
+
+    /**
+     * Récupère la liste déroulante qui contient les sessions reconnues.
+     *
+     * @return la liste déroulante des sessions reconnues.
+     */
     public ChoiceBox<String> getSessionChoices(){
         return sessionChoices;
     }
+
+    /**
+     * Récupère le tableau qui affiche les cours pour la session choisie.
+     *
+     * @return le tableau qui affiche les cours pour la session choisie.
+     */
     public TableView<Course> getClassViewTable() {
         return classViewTable;
     }
+
+    /**
+     * Récupère le champ pour le prénom dans le formulaire d'inscription.
+     *
+     * @return le champ pour le prénom dans le formulaire d'inscription.
+     */
     public TextField getPrenomField() {
         return prenomField;
     }
+
+    /**
+     * Récupère le champ pour le nom dans le formulaire d'inscription.
+     *
+     * @return le champ pour le nom dans le formulaire d'inscription.
+     */
     public TextField getNomField() {
         return nomField;
     }
+
+    /**
+     * Récupère le champ pour l'email dans le formulaire d'inscription.
+     *
+     * @return le champ pour l'email dans le formulaire d'inscription.
+     */
     public TextField getEmailField() {
         return emailField;
     }
+
+    /**
+     * Récupère le champ pour la matricule dans le formulaire d'inscription.
+     *
+     * @return le champ pour la matricule dans le formulaire d'inscription.
+     */
     public TextField getMatriculeField() {
         return matriculeField;
     }
 
+    /**
+     * Mettre à jour le tableau de la liste de cours pour une session donneé.
+     *
+     * @param courseList liste de cours à afficher
+     */
+
     public void updateClassTable(List<Course> courseList) {
         classViewTable.setItems(observableList(courseList));
     }
+
+    /**
+     * Effacer le contenu des champs du formulaire d'inscription.
+     */
     public void clearRegistrationForm() {
         prenomField.clear();
         nomField.clear();

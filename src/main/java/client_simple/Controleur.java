@@ -1,5 +1,6 @@
 package client_simple;
 
+import client_fx.Modele;
 import server.models.Course;
 import server.models.RegistrationForm;
 
