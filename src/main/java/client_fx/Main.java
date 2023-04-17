@@ -7,16 +7,17 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         Modele leModele = new Modele();
         Vue laVue = new Vue();
         Controleur leControleur = new Controleur(leModele, laVue);
 
-        Scene scene = new Scene(laVue, 500, 500);
+        Scene scene = new Scene(laVue, 600, 500);
 
         stage.setScene(scene);
-        stage.setTitle("Inscription de cours");
+        stage.setTitle("Inscription UdeM");
         stage.show();
+
     }
 
     public static void main(String[] args) {

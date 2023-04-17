@@ -54,7 +54,6 @@ public class Server {
     public void listen() throws IOException, ClassNotFoundException {
         String line;
         if ((line = this.objectInputStream.readObject().toString()) != null) {
-            System.out.println(line);
             Pair<String, String> parts = processCommandLine(line);
             String cmd = parts.getKey();
             String arg = parts.getValue();
@@ -91,32 +90,52 @@ public class Server {
      @param arg la session pour laquelle on veut récupérer la liste des cours
      */
     public void handleLoadCourses(String arg) {
-        String sessionFiltre = arg;
-        System.out.println("loading courses");
+        String selectedSession = arg;
+        System.out.println("En train de charger les cours pour la session " + selectedSession + "...");
+        List <Course> courseList = new ArrayList<>();
+        List <Exception> errorList = new ArrayList<>();
 
-        //try (BufferedReader reader = new BufferedReader(new FileReader("cours.txt"))){
+        // try (BufferedReader reader = new BufferedReader(new FileReader("cours.txt"))){
         try (BufferedReader reader = new BufferedReader(new FileReader("./src/main/java/server/data/cours.txt"))){
-            List <Course> listeDeCours = new ArrayList<>();
-            Map<String, Course> courseDict = new HashMap<>();
-
             String line;
             while((line = reader.readLine()) != null) {
                 String[] parts = line.split("\t");
                 String code = parts[0];
                 String name = parts[1];
                 String session = parts[2];
-                if (sessionFiltre.equals(session)) {
-                    listeDeCours.add(new Course(name, code, session));
-                    courseDict.put(code, new Course(name, code, session));
+                if (session.equals(selectedSession)) {
+                    courseList.add(new Course(name, code, session));
                 }
             }
-
-            objectOutputStream.writeObject(listeDeCours);
-            // objectOutputStream.writeObject(courseDict); //TEMP: simple client needs dict
-
-
         } catch (IOException ex) {
-            System.out.println("issue with reading cours.txt");
+            String fileReadErrorMessage = "Erreur lors de la lecture du fichier cours.txt.";
+            System.out.println(fileReadErrorMessage);
+            errorList.add(new IOException(fileReadErrorMessage));
+        }
+
+        try {
+            if (errorList.size() == 0) {
+                objectOutputStream.writeObject(courseList);
+                objectOutputStream.flush();
+            } else {
+                objectOutputStream.writeObject(null);
+                objectOutputStream.flush();
+            }
+        } catch (IOException ex) {
+            String streamWriteErrorMessage = "Erreur lors de l'écriture de la liste des cours dans le flux.";
+            System.out.println(streamWriteErrorMessage);
+            errorList.add(new IOException(streamWriteErrorMessage));
+        }
+
+        try {
+            objectOutputStream.writeObject(errorList);
+            objectOutputStream.flush();
+        } catch (IOException ex) {
+            System.out.println("Erreur lors de l'écriture de la liste d'erreurs dans le flux.");
+        }
+
+        if (errorList.size() == 0) {
+            System.out.println("Réussite!");
         }
     }
 
@@ -125,26 +144,84 @@ public class Server {
      et renvoyer un message de confirmation au client.
      La méthode gére les exceptions si une erreur se produit lors de la lecture de l'objet, l'écriture dans un fichier ou dans le flux de sortie.
      */
-    //"./src/main/java/server/data/inscription.txt"
     public void handleRegistration() {
+        System.out.println("En train d'effectuer une nouvelle inscription...");
+        RegistrationForm registrationForm = null;
+        String nouveau_inscription = null;
+        String message_inscription = null;
+        List <Exception> errorList = new ArrayList<>();
+        try {
+            registrationForm = (RegistrationForm) objectInputStream.readObject();
+        } catch (ClassNotFoundException ex) {
+            System.out.println("Erreur lors de la lecture de l'objet RegistrationForm.");
+            errorList.add(new ClassNotFoundException("Erreur lors de la lecture de l'objet RegistrationForm."));
+        } catch (IOException ex) {
+            System.out.println("Erreur lors de la lecture de l'objet RegistrationForm.");
+            errorList.add(new IOException("Erreur lors de la lecture de l'objet RegistrationForm."));
+        }
 
-        //try (BufferedWriter writer = new BufferedWriter(new FileWriter("inscription.txt", true))){
+        try {
+            if (
+                    registrationForm != null && registrationForm.getCourse() != null
+                            && registrationForm.getMatricule().length() != 0 && registrationForm.getPrenom().length() != 0
+                            && registrationForm.getNom().length() != 0 && registrationForm.getEmail().length() != 0
+            ) {
+                Course course = registrationForm.getCourse();
+                String session = course.getSession();
+                String code = course.getCode();
+                String matricule = registrationForm.getMatricule();
+                String prenom = registrationForm.getPrenom();
+                String nom = registrationForm.getNom();
+                String email = registrationForm.getEmail();
+
+                nouveau_inscription = session + "\t" + code + "\t" + matricule + "\t" + prenom + "\t" + nom + "\t" + email;
+                message_inscription = "Félicitations! Inscription réussie de " + prenom + " " + nom + " au cours " + code + ".";
+            } else {
+                throw new IllegalArgumentException("Erreur: le formulaire d'inscription n'est pas complet.");
+            }
+
+        } catch (IllegalArgumentException ex) {
+            System.out.println(ex.getMessage());
+            errorList.add(ex);
+        }
+
+        System.out.println(nouveau_inscription);
+        // try (BufferedWriter writer = new BufferedWriter(new FileWriter("inscription.txt", true))){
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("./src/main/java/server/data/inscription.txt", true))){
-            RegistrationForm registrationForm = (RegistrationForm) objectInputStream.readObject();
-            Course course = registrationForm.getCourse();
-            String session = course.getSession();
-            String code = course.getCode();
-            String matricule = registrationForm.getMatricule();
-            String prenom = registrationForm.getPrenom();
-            String nom = registrationForm.getNom();
-            String email = registrationForm.getEmail();
+            if (nouveau_inscription != null) {
+                writer.newLine();
+                writer.write(nouveau_inscription);
+            }
+        }
+        catch (IOException ex) {
+            String recordRegistrationErrorMessage = "Erreur lors de l'écriture dans le fichier inscription.txt.";
+            System.out.println(recordRegistrationErrorMessage);
+            errorList.add(new IOException(recordRegistrationErrorMessage));
+        }
 
-            String nouveau_inscription = session + "\t" + code + "\t" + matricule + "\t" + prenom + "\t" + nom + "\t" + email;
-            writer.newLine();
-            writer.write(nouveau_inscription);
-            objectOutputStream.writeObject("Success");
+        try {
+            if (errorList.size() == 0) {
+                objectOutputStream.writeObject(message_inscription);
+                objectOutputStream.flush();
+            } else {
+                objectOutputStream.writeObject(null);
+                objectOutputStream.flush();
+            }
+        } catch (IOException ex) {
+            String streamWriteErrorMessage = "Erreur lors de l'écriture dans le flux de sortie.";
+            System.out.println(streamWriteErrorMessage);
+            errorList.add(new IOException(streamWriteErrorMessage));
+        }
 
-        } catch (Exception ex) {
+        try {
+            objectOutputStream.writeObject(errorList);
+            objectOutputStream.flush();
+        } catch (IOException ex) {
+            System.out.println("Erreur lors de l'écriture de la liste d'erreurs dans le flux.");
+        }
+
+        if (errorList.size() == 0) {
+            System.out.println("Réussite!");
         }
 
     }
