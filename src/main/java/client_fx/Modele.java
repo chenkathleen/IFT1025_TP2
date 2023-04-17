@@ -49,7 +49,6 @@ public class Modele {
                 ObjectInputStream is = new ObjectInputStream(cS.getInputStream());
         ) {
             os.writeObject(args);
-            os.flush();
 
             courseList = (ArrayList <Course>) is.readObject();
             // courseList est null si et seulement si il y a une exception dans handleLoadCourses
@@ -94,7 +93,6 @@ public class Modele {
         ) {
             os.writeObject("INSCRIRE");
             os.writeObject(form);
-            os.flush();
             message = (String) is.readObject();
             if (message == null) {
                 errorList = (ArrayList <Exception>) is.readObject();

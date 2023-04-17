@@ -158,8 +158,8 @@ public class Server {
         List <Course> courseList = new ArrayList<>();
         List <Exception> errorList = new ArrayList<>();
 
-        // try (BufferedReader reader = new BufferedReader(new FileReader("cours.txt"))){
-        try (BufferedReader reader = new BufferedReader(new FileReader("./src/main/java/server/data/cours.txt"))){
+        try (BufferedReader reader = new BufferedReader(new FileReader("cours.txt"))){
+        //try (BufferedReader reader = new BufferedReader(new FileReader("./src/main/java/server/data/cours.txt"))){
             String line;
             while((line = reader.readLine()) != null) {
                 String[] parts = line.split("\t");
@@ -179,10 +179,8 @@ public class Server {
         try {
             if (errorList.size() == 0) {
                 objectOutputStream.writeObject(courseList);
-                objectOutputStream.flush();
             } else {
                 objectOutputStream.writeObject(null);
-                objectOutputStream.flush();
             }
         } catch (IOException ex) {
             String streamWriteErrorMessage = "Erreur lors de l'écriture de la liste des cours dans le flux.";
@@ -192,7 +190,6 @@ public class Server {
 
         try {
             objectOutputStream.writeObject(errorList);
-            objectOutputStream.flush();
         } catch (IOException ex) {
             System.out.println("Erreur lors de l'écriture de la liste d'erreurs dans le flux.");
         }
@@ -249,8 +246,8 @@ public class Server {
         }
 
         System.out.println(nouveau_inscription);
-        // try (BufferedWriter writer = new BufferedWriter(new FileWriter("inscription.txt", true))){
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("./src/main/java/server/data/inscription.txt", true))){
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("inscription.txt", true))){
+        // try (BufferedWriter writer = new BufferedWriter(new FileWriter("./src/main/java/server/data/inscription.txt", true))){
             if (nouveau_inscription != null) {
                 writer.newLine();
                 writer.write(nouveau_inscription);
@@ -265,10 +262,8 @@ public class Server {
         try {
             if (errorList.size() == 0) {
                 objectOutputStream.writeObject(message_inscription);
-                objectOutputStream.flush();
             } else {
                 objectOutputStream.writeObject(null);
-                objectOutputStream.flush();
             }
         } catch (IOException ex) {
             String streamWriteErrorMessage = "Erreur lors de l'écriture dans le flux de sortie.";
@@ -278,7 +273,6 @@ public class Server {
 
         try {
             objectOutputStream.writeObject(errorList);
-            objectOutputStream.flush();
         } catch (IOException ex) {
             System.out.println("Erreur lors de l'écriture de la liste d'erreurs dans le flux.");
         }
